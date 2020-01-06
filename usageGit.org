@@ -1,6 +1,6 @@
 * Redmine : dépôt de référence 
 
-- https://redmine.telecom-bretagne.eu/projects/modularite/repository : dépôt privé
+- https://redmine.telecom-bretagne.eu/projects/fil_coq/repository : dépôt privé
 - inscription déjà effectuée pour chaque étudiant
 
 - branche master du dépôt Git : branche de référence (unique)
@@ -8,7 +8,7 @@
 * FIL Local : clone du dépôt sur Redmine
 
 #+BEGIN_SRC text
-> git clone https://redmine.telecom-bretagne.eu/git/modularite
+> git clone https://redmine.telecom-bretagne.eu/git/fil_coq
 #+END_SRC
 
 - branche master : branche de référence à mettre à jour régulièrement
