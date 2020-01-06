@@ -1,0 +1,45 @@
+* Redmine : dépôt de référence 
+
+- https://redmine.telecom-bretagne.eu/projects/modularite/repository : dépôt privé
+- inscription déjà effectuée pour chaque étudiant
+
+- branche master du dépôt Git : branche de référence (unique)
+
+* FIL Local : clone du dépôt sur Redmine
+
+#+BEGIN_SRC text
+> git clone https://redmine.telecom-bretagne.eu/git/modularite
+#+END_SRC
+
+- branche master : branche de référence à mettre à jour régulièrement
+
+* FIL Local : développement dans le clone du dépôt dans une branche dédiée
+
+- Créer une branche pour votre groupe
+  #+BEGIN_SRC text
+  > git branch groupeX
+  #+END_SRC
+
+- Se placer sur cette branche pour développer.
+  #+BEGIN_SRC text
+  > git checkout groupeX
+  #+END_SRC
+
+- Après validation (*commit*) des développements, pousser vers le dépôt
+  la branche utilisée.
+  #+BEGIN_SRC text
+  > git push
+  #+END_SRC
+ 
+* FIL Local Redmine : requête pour contribuer à la branche master
+
+- Créer une branche pour votre requête et y développer votre
+  contribution.
+- Valider votre contribution et la pousser vers le dépôt.
+- Sur Redmine, effectuer une demande en la motivant et en indiquant
+  la branche associée à votre requête.
+
+*Règle importante :* Nul n'est censé contribuer directement à la branche
+*master*. 
+
+
