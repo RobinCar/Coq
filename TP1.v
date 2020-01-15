@@ -68,6 +68,8 @@ Module SystemeInference.
 
   Local Notation "[ x ; y ; .. ; z ]" := (cons _ x (cons _ y .. (cons _ z (vide)) ..)) : type_scope.
 
+
+
   Definition l1 := [3 ; 4; 5].
 
   Print l1.
@@ -147,17 +149,17 @@ Module SystemeInference.
   Proof.
 
     intros p q. (* Destruction du forall, ajout des hypothèses (p : nat) et (q : nat) *)
+    
+    apply ouDg.
 
-    destruct q.
+    apply idF.
 
-    simpl.
     (* Appliquer les bonnes règles en utilisant les tactiques 
 
        - apply constructeur.
 
      *)
-    admit.
-  Admitted. 
+  Qed. 
 
   (* à remplacer par : Qed. Quid est demonstratum. *)
 
@@ -183,10 +185,13 @@ Module Logique.
   Notation "x /\ y" := (Et x y) : type_scope.
   Notation "~ x" := (NonP x) : type_scope.
 
+
   Lemma n_plus_1_egal_1_plus_n : forall n : nat, n + 1 = 1 + n.
   Proof.
     intro n.
-    destruct n. reflexivity.
+    destruct n. 
+    auto.
+    simpl. auto.
     admit. 
   Admitted.
 

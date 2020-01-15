@@ -226,17 +226,56 @@ Definition negb (b:bool) : bool :=
   | false => true
   end.
 
+Definition negb' (b:bool) : bool.
+  Proof.
+  Show Match bool.
+  case b.
+  {
+    apply false.
+  }
+  {
+    apply true.
+  }
+Defined.
+Print negb'.
+
 Definition andb (b1:bool) (b2:bool) : bool :=
   match b1 with
   | true => b2
   | false => false
   end.
 
+Definition andb' (b1:bool) (b2:bool) : bool.
+  Proof.
+  Show Match bool.
+  case b1.
+  {
+    apply b2.
+  }
+  {
+    apply false.
+  }
+Defined.
+Print andb'.
+
 Definition orb (b1:bool) (b2:bool) : bool :=
   match b1 with
   | true => true
   | false => b2
   end.
+
+Definition orb' (b1:bool) (b2:bool) : bool.
+  Proof.
+  Show Match bool.
+  case b1.
+  {
+    apply true.
+  }
+  {
+    apply b2.
+  }
+Defined.
+Print orb'.
 
 (** The last two of these illustrate Coq's syntax for
     multi-argument function definitions.  The corresponding
@@ -293,6 +332,15 @@ Proof. simpl. reflexivity. Qed.
 Example test_nandb4:               (nandb true true) = false.
 Proof. simpl. reflexivity. Qed.
 
+(*
+Definition nandb' (b1:bool) (b2:bool) : bool.
+  Proof.
+  Show Match bool.
+  apply negb' (andb' b1 b2).
+Defined.
+Print nandb'.
+*)
+
 (** [] *)
 
 (** **** Exercise: 1 star, standard (andb3)
@@ -306,6 +354,19 @@ Definition andb3 (b1:bool) (b2:bool) (b3:bool) : bool :=
   | true => (andb b2 b3)
   | false => false
   end.
+
+Definition andb3' (b1:bool) (b2:bool) (b3:bool) : bool.
+  Proof.
+  Show Match bool.
+  case b1.
+  {
+    apply (andb' b2 b3).
+  }
+  {
+    apply false.
+  }
+Defined.
+Print andb3'.
 
 Example test_andb31:                 (andb3 true true true) = true.
 Proof. simpl. reflexivity. Qed.
