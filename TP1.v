@@ -148,14 +148,15 @@ Module SystemeInference.
 
     intros p q. (* Destruction du forall, ajout des hypothèses (p : nat) et (q : nat) *)
 
+    destruct q.
+
+    simpl.
     (* Appliquer les bonnes règles en utilisant les tactiques 
 
        - apply constructeur.
 
      *)
-
     admit.
-
   Admitted. 
 
   (* à remplacer par : Qed. Quid est demonstratum. *)
@@ -164,6 +165,51 @@ End SystemeInference.
 
 Module Logique.
 
-(* à compléter. *)
+  Inductive Faux : Prop :=.
+  Inductive Vrai : Prop :=
+    | vrai.
+
+  Inductive Ou (p q: Prop) : Prop :=
+    | ouG : forall (P: Prop) (Q: Prop), p -> (Ou p q)
+    | ouD : forall (P: Prop) (Q: Prop), q -> (Ou p q).
+    
+
+  Inductive Et : Prop -> Prop -> Prop :=
+    | et : forall (P: Prop) (Q: Prop), P -> Q -> (Et P Q).
+  
+  Definition NonP (p: Prop) : Prop := p -> Faux.
+
+  Notation "x \/ y" := (Ou x y) : type_scope.
+  Notation "x /\ y" := (Et x y) : type_scope.
+  Notation "~ x" := (NonP x) : type_scope.
+
+  Lemma n_plus_1_egal_1_plus_n : forall n : nat, n + 1 = 1 + n.
+  Proof.
+    intro n.
+    destruct n. reflexivity.
+    admit. 
+  Admitted.
+
+  Lemma distributivite : forall p q r, 
+    ((p /\ (q \/ r) -> (p /\ q) \/ (p /\ r)) /\ ((p /\ q) \/ (p /\ r) -> p /\ (q \/ r))). 
+
+  Proof.
+    intros P Q R.
+    apply et. right.
+  (*
+   * Pour appliquer la règle droite de l'implication, 
+     - intro H. (H est le nom choisi pour l'hypothèse)
+   * Pour appliquer une règle droite décomposant l'opérateur logique C (ou/et) : 
+     - apply C.
+   * Pour appliquer une règle gauche décomposant l'opérateur logique C (ou/et): 
+     - case C as [premisses].
+   * On indique dans [premisses] pour chaque règle les noms des variables associées 
+   * à chaque prémisse de la règle. Le séparateur est |.
+   * Exemples : 
+     - Ou -> [p | q] (deux règles, chaque règle ayant une prémisse).
+     - Et -> [p q] (une règle, avec deux prémisses).
+   *)
+   admit.
+  Admitted.
 
 End  Logique.
