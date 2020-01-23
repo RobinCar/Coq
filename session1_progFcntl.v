@@ -94,6 +94,34 @@ Definition next_weekday (d:day) : day :=
   | sunday    => monday
   end.
 
+Definition next_weekday' (d:day) : day.
+  Proof.
+  Show Match day.
+  case d.
+  {
+    apply tuesday.
+  }
+  {
+    apply wednesday.
+  }
+  {
+    apply thursday.
+  }
+  {
+    apply friday.
+  }
+  {
+    apply monday.
+  }
+  {
+    apply monday.
+  }
+  {
+    apply monday.
+  }
+Defined.
+Print next_weekday'.
+
 (** One thing to note is that the argument and return types of
     this function are explicitly declared.  Like most functional
     programming languages, Coq can often figure out these types for
@@ -130,6 +158,11 @@ Example test_next_weekday:
     and it gives the assertion a name that can be used to refer to it
     later.  Having made the assertion, we can also ask Coq to verify
     it, like this: *)
+
+Proof. simpl. reflexivity.  Qed.
+
+Example test_next_weekday':
+  (next_weekday' (next_weekday' saturday)) = tuesday.
 
 Proof. simpl. reflexivity.  Qed.
 
@@ -292,6 +325,15 @@ Proof. simpl. reflexivity.  Qed.
 Example test_orb4:  (orb true  true)  = true.
 Proof. simpl. reflexivity.  Qed.
 
+Example test_orb1':  (orb' true  false) = true.
+Proof. simpl. reflexivity.  Qed.
+Example test_orb2':  (orb' false false) = false.
+Proof. simpl. reflexivity.  Qed.
+Example test_orb3':  (orb' false true)  = true.
+Proof. simpl. reflexivity.  Qed.
+Example test_orb4':  (orb' true  true)  = true.
+Proof. simpl. reflexivity.  Qed.
+
 (** We can also introduce some familiar syntax for the boolean
     operations we have just defined. The [Notation] command defines a new
     symbolic notation for an existing definition. *)
@@ -300,6 +342,9 @@ Notation "x && y" := (andb x y).
 Notation "x || y" := (orb x y).
 
 Example test_orb5:  false || false || true = true.
+Proof. simpl. reflexivity. Qed.
+
+Example test_orb5':  false || false || true = true.
 Proof. simpl. reflexivity. Qed.
 
 (** _A note on notation_: In [.v] files, we use square brackets
@@ -323,6 +368,13 @@ Proof. simpl. reflexivity. Qed.
 
 Definition nandb (b1:bool) (b2:bool) : bool := negb(andb b1 b2).
   
+Definition nandb' (b1:bool) (b2:bool) : bool.
+  Proof.
+  Show Match bool.
+  apply (negb (andb b1 b2)).
+Defined.
+Print nandb'.
+
 Example test_nandb1:               (nandb true false) = true.
 Proof. simpl. reflexivity. Qed.
 Example test_nandb2:               (nandb false false) = true.
@@ -330,6 +382,15 @@ Proof. simpl. reflexivity. Qed.
 Example test_nandb3:               (nandb false true) = true.
 Proof. simpl. reflexivity. Qed.
 Example test_nandb4:               (nandb true true) = false.
+Proof. simpl. reflexivity. Qed.
+
+Example test_nandb1':               (nandb' true false) = true.
+Proof. simpl. reflexivity. Qed.
+Example test_nandb2':               (nandb' false false) = true.
+Proof. simpl. reflexivity. Qed.
+Example test_nandb3':               (nandb' false true) = true.
+Proof. simpl. reflexivity. Qed.
+Example test_nandb4':               (nandb' true true) = false.
 Proof. simpl. reflexivity. Qed.
 
 (*
@@ -375,6 +436,15 @@ Proof. simpl. reflexivity. Qed.
 Example test_andb33:                 (andb3 true false true) = false.
 Proof. simpl. reflexivity. Qed.
 Example test_andb34:                 (andb3 true true false) = false.
+Proof. simpl. reflexivity. Qed.
+
+Example test_andb31':                 (andb3' true true true) = true.
+Proof. simpl. reflexivity. Qed.
+Example test_andb32':                 (andb3' false true true) = false.
+Proof. simpl. reflexivity. Qed.
+Example test_andb33':                 (andb3' true false true) = false.
+Proof. simpl. reflexivity. Qed.
+Example test_andb34':                 (andb3' true true false) = false.
 Proof. simpl. reflexivity. Qed.
 (** [] *)
 
@@ -455,6 +525,23 @@ Definition monochrome (c : color) : bool :=
   | primary q => false
   end.
 
+Definition monochrome' (c:color) : bool.
+  Proof.
+  Show Match color.
+  case c.
+  {
+    apply true.
+  }
+  {
+    apply true.
+  }
+  {
+    intros.
+    apply false.
+  }
+Defined.
+Print monochrome'.
+
 (** Since the [primary] constructor takes an argument, a pattern
     matching [primary] should include either a variable (as above --
     note that we can choose its name freely) or a constant of
@@ -467,6 +554,32 @@ Definition isred (c : color) : bool :=
   | primary red => true
   | primary _ => false
   end.
+
+Definition isred' (c:color) : bool.
+  Proof.
+  Show Match color.
+  case c.
+  {
+    apply false.
+  }
+  {
+    apply false.
+  }
+  {
+    intros.
+    case p.
+    {
+      apply true.
+    }
+    {
+      apply false.
+    }
+    {
+      apply false.
+    }
+  }
+Defined.
+Print isred'.
 
 (** The pattern [primary _] here is shorthand for "[primary] applied
     to any [rgb] constructor except [red]."  (The wildcard pattern [_]
@@ -506,9 +619,46 @@ Definition all_zero (nb : nybble) : bool :=
     | (bits _ _ _ _) => false
   end.
 
+Definition all_zero' (nb : nybble) : bool.
+  Proof.
+  Show Match color.
+  case nb.
+  {
+    intros.
+    case b0.
+    {
+      case b1.
+      {
+        case b2.
+        {
+          case b3.
+          {
+            apply true.
+          }
+          {
+            apply false.
+          }
+        }
+        {
+          apply false.
+        }
+      }
+      {
+        apply false.
+      }
+    }
+    {
+      apply false.
+    }
+  }
+Defined.
+Print all_zero'.
+
 Compute (all_zero (bits B1 B0 B1 B0)).
+Compute (all_zero' (bits B1 B0 B1 B0)).
 (* ===> false : bool *)
 Compute (all_zero (bits B0 B0 B0 B0)).
+Compute (all_zero' (bits B0 B0 B0 B0)).
 (* ===> true : bool *)
 
 (* ================================================================= *)
