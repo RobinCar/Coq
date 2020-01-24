@@ -625,31 +625,9 @@ Definition all_zero' (nb : nybble) : bool.
   case nb.
   {
     intros.
-    case b0.
-    {
-      case b1.
-      {
-        case b2.
-        {
-          case b3.
-          {
-            apply true.
-          }
-          {
-            apply false.
-          }
-        }
-        {
-          apply false.
-        }
-      }
-      {
-        apply false.
-      }
-    }
-    {
-      apply false.
-    }
+    case b0; case b1; case b2; case b3.
+    exact true.
+    all : exact false.
   }
 Defined.
 Print all_zero'.

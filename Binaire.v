@@ -44,13 +44,13 @@
 
 Inductive Binaire : Type :=
 
-  | zeroFinal : _
+  | zeroFinal : Binaire
 
-  | unFinal : _
+  | unFinal : Binaire
 
-  | zero : forall n : Binaire, _
+  | zero : forall n : Binaire, Binaire
 
-  | un : forall n : Binaire, _.
+  | un : forall n : Binaire, Binaire.
 
 (** nat comme Binaire forment des algèbres initiales.
 
@@ -85,10 +85,14 @@ Check (O,I,O,I).
 Definition zeroBin : Binaire := O.
 
 Fixpoint successeurBin (m : Binaire) : Binaire.
-
-  (* TODO *)
-
-Admitted.
+  Show Match Binaire.
+  case m eqn:H.
+  - exact unFinal.
+  - exact (zero unFinal).
+  - exact (un b).
+  - exact (zero (successeurBin b)).
+Defined.
+Print successeurBin.
 
 Fixpoint morphismeNatBinaire (n : nat) : Binaire.
 
