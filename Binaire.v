@@ -85,44 +85,49 @@ Check (O,I,O,I).
 Definition zeroBin : Binaire := O.
 
 Fixpoint successeurBin (m : Binaire) : Binaire.
-  Show Match Binaire.
-  case m eqn:H.
-  - exact unFinal.
-  - exact (zero unFinal).
-  - exact (un b).
-  - exact (zero (successeurBin b)).
+  case m as [ | | b | b ].
+  - exact I.
+  - exact (O,I).
+  - exact (I, b).
+  - exact (O,(successeurBin b)).
 Defined.
 Print successeurBin.
 
 Fixpoint morphismeNatBinaire (n : nat) : Binaire.
-
-  (* TODO *)
-
-Admitted.
-
+  case n as [ | s].
+  - exact O.
+  - exact (successeurBin (morphismeNatBinaire s)). 
+Defined.
+Print morphismeNatBinaire.
 (** De [Binaire] vers [nat] *)
 
 Definition zeroFinalNat : nat := 0.
 
 Definition unFinalNat : nat := 1.
 
-Definition doubleNat : nat -> nat.
-
-  (* TODO *)
-
-Admitted.
+Definition doubleNat (n: nat) : nat.
+Proof.
+  induction n.
+  - exact zeroFinalNat.
+  - apply (S (S (IHn))).
+Defined. 
+Print doubleNat.
 
 Definition successeurDoubleNat (n : nat) : nat.
-
-  (* TODO *)
-
-Admitted.
+exact (S (doubleNat n)).
+Defined.
+Print successeurDoubleNat.
 
 Fixpoint morphismeBinaireNat (m : Binaire) : nat.
+Proof.
+  case m.
+  Show Proof.
+  - apply zeroFinalNat.
+  - apply unFinalNat.
+  - intros. apply (doubleNat (morphismeBinaireNat n)).
+  - intros. apply (successeurDoubleNat (morphismeBinaireNat n)).
+Defined.
 
-  (* TODO *)
-
-Admitted.
 
 (** Ecrire quelques tests pour les morphismes.
 
@@ -134,6 +139,7 @@ Admitted.
 
 (* TODO *)
 
+
 (** morphismeBinaireNat est un morphisme d'algèbre sur N.*)
 
 Lemma morphismeZero_morphismeBinaireNat :
@@ -141,21 +147,20 @@ Lemma morphismeZero_morphismeBinaireNat :
   morphismeBinaireNat zeroBin = 0.
 
 Proof.
-
-  (* TODO *)
-
-Admitted.
+  auto.
+Qed.
 
 Lemma morphismeSuccesseur_morphismeBinaireNat :
 
   forall b, morphismeBinaireNat (successeurBin b) = S (morphismeBinaireNat b).
 
 Proof.
-
-  (* TODO *)
-
-Admitted.
-
+  induction b.
+  - reflexivity.
+  - reflexivity.
+  - reflexivity.
+  - simpl. rewrite IHb. reflexivity.
+Qed.
 (** morphismeBinaireNat o morphismeNatBinaire : nat -> nat est un morphisme d'algèbre sur N.
 
  * Par initialité, c'est l'identité.
@@ -167,16 +172,23 @@ Proposition inverseGaucheMorphismeNatBinaire_morphismeBinaireNat :
   forall n, morphismeBinaireNat (morphismeNatBinaire n) = n.
 
 Proof.
-
-  (* TODO *)
-
-Admitted.
-
+  intros.
+  induction n.
+  - reflexivity.
+  - simpl. rewrite morphismeSuccesseur_morphismeBinaireNat. rewrite IHn. reflexivity.
+Qed.
 (** Forme normale : pas de zéros à droite, sauf si elle est égale à zéro (zeroFinal) *)
 
 Definition formeNormaleBinaire : Binaire -> Binaire.
-
-  (* TODO *)
+intros.
+case H eqn:d.
+1,2:exact H.
+- {
+  induction b.
+  - exact O.
+  - exact H.
+  - apply IHb. exact
+}
 
 Admitted.
 
