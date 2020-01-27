@@ -181,28 +181,22 @@ Qed.
 
 Definition formeNormaleBinaire : Binaire -> Binaire.
 intros.
-case H eqn:d.
-1,2:exact H.
-- {
-  induction b.
-  - exact O.
-  - exact H.
-  - apply IHb. exact
-}
-
-Admitted.
+case H.
+- exact zeroFinal.
+- exact unFinal.
+- intros. exact (morphismeNatBinaire (morphismeBinaireNat H)). 
+- intros. exact (morphismeNatBinaire (morphismeBinaireNat H)).
+Defined. 
 
 Example formeNormale5 : (I,O,I) = formeNormaleBinaire (morphismeNatBinaire 5).
-
-  (* simpl. reflexivity. *)
-
-Admitted.
+simpl. reflexivity.
+Defined.
 
 Example formeNormale5' : (I,O,I) = formeNormaleBinaire (un (zero (un zeroFinal))).
 
-  (* simpl. reflexivity. *)
+simpl. reflexivity.
 
-Admitted.
+Defined.
 
 Compute (formeNormaleBinaire (O,I,O,I,O,O,O,O)).
 
@@ -219,10 +213,11 @@ Compute (formeNormaleBinaire (O,O,O,O,O)).
 Lemma formeNormale_idempotence :
 
   forall b, formeNormaleBinaire (formeNormaleBinaire b) = formeNormaleBinaire b.
-
 Proof.
-
-  (* TODO *)
+intros.
+induction b.
+1,2: reflexivity.
+- simpl.
 
 Admitted.
 
@@ -231,28 +226,32 @@ Lemma successeurBin_commute :
   forall b, successeurBin (formeNormaleBinaire b) = formeNormaleBinaire (successeurBin b).
 
 Proof.
-
-  (* TODO *)
-
-Admitted.
-
+intros.
+induction b.
+1,2,3:reflexivity.
+- simpl. rewrite morphismeSuccesseur_morphismeBinaireNat. reflexivity.
+Qed.
 Lemma doubleBin :
 
   forall n, morphismeNatBinaire (doubleNat n) = formeNormaleBinaire (zero (morphismeNatBinaire n)).
 
 Proof.
-
-  (* TODO *)
-
-Admitted.
+intros.
+induction n.
+- reflexivity.
+- simpl. rewrite IHn. simpl. rewrite morphismeSuccesseur_morphismeBinaireNat. reflexivity.
+Qed.
 
 Lemma successeurDoubleBin :
 
   forall n, morphismeNatBinaire (successeurDoubleNat n) = formeNormaleBinaire (un (morphismeNatBinaire n)).
 
 Proof.
+intros.
+induction n.
+- reflexivity.
+- simpl. rewrite morphismeSuccesseur_morphismeBinaireNat. 
 
-  (* TODO *)
 
 Admitted.
 
