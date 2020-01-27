@@ -217,9 +217,9 @@ Proof.
 intros.
 induction b.
 1,2: reflexivity.
-- simpl.
 
 Admitted.
+
 
 Lemma successeurBin_commute :
 
@@ -250,17 +250,15 @@ Proof.
 intros.
 induction n.
 - reflexivity.
-- simpl. rewrite morphismeSuccesseur_morphismeBinaireNat. 
-
-
-Admitted.
+- simpl. rewrite morphismeSuccesseur_morphismeBinaireNat. simpl.  rewrite inverseGaucheMorphismeNatBinaire_morphismeBinaireNat. reflexivity.
+Qed.
 
 Theorem morphismeBinaireNat_morphismeNatBinaire :
 
   forall b, morphismeNatBinaire (morphismeBinaireNat b) = formeNormaleBinaire b.
 
 Proof.
-
-  (* TODO *)
-
-Admitted.
+intros.
+induction b.
+1-4:reflexivity.
+Qed.
