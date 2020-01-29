@@ -43,7 +43,7 @@
 **)
 
 Inductive Binaire : Type :=
-
+ 
   | zeroFinal : Binaire
 
   | unFinal : Binaire
@@ -129,15 +129,10 @@ Proof.
 Defined.
 
 
-(** Ecrire quelques tests pour les morphismes.
-
- * Un "test unitaire" en Coq est un [Example] spécifique qui
-
-        peut être prouvée avec juste [reflexivity].
-
- *)
-
-(* TODO *)
+Example example1 : morphismeNatBinaire 10 = O,I,O,I.
+reflexivity. Qed.
+Example example2 : morphismeBinaireNat (I,I,I) = 7.
+reflexivity. Qed.
 
 
 (** morphismeBinaireNat est un morphisme d'algèbre sur N.*)
@@ -179,13 +174,20 @@ Proof.
 Qed.
 (** Forme normale : pas de zéros à droite, sauf si elle est égale à zéro (zeroFinal) *)
 
-Definition formeNormaleBinaire : Binaire -> Binaire.
-intros.
-case H.
-- exact zeroFinal.
-- exact unFinal.
-- intros. exact (morphismeNatBinaire (morphismeBinaireNat H)). 
-- intros. exact (morphismeNatBinaire (morphismeBinaireNat H)).
+Fixpoint formeNormaleBinaire (b : Binaire) : Binaire.
+  case b as [ | | b' | b'].
+  - exact O.
+  - exact I.
+  - case (formeNormaleBinaire b') as [ | | nb' | nb'].
+    + exact O.
+    + exact (O,I).
+    + exact (O,O,nb').
+    + exact (O,I,nb').
+  - case (formeNormaleBinaire b') as [ | | nb' | nb'].
+    + exact I.
+    + exact (I,I).
+    + exact (I,O,nb').
+    + exact (I,I,nb').
 Defined. 
 
 Example formeNormale5 : (I,O,I) = formeNormaleBinaire (morphismeNatBinaire 5).
@@ -211,14 +213,23 @@ Compute (formeNormaleBinaire (O,O,O,O,O)).
  *)
 
 Lemma formeNormale_idempotence :
-
   forall b, formeNormaleBinaire (formeNormaleBinaire b) = formeNormaleBinaire b.
-Proof.
-intros.
-induction b.
-1,2: reflexivity.
 
-Admitted.
+Proof.
+  intro b.
+  induction b as [ | | b' | b'].
+  1,2: reflexivity.
+  - simpl. case (formeNormaleBinaire b') as [ | | nb' | nb'].
+    + reflexivity.
+    + reflexivity.
+    + simpl in IHb'. simpl. rewrite IHb'. reflexivity.
+    + simpl in IHb'. simpl. rewrite IHb'. reflexivity.
+  - simpl. case (formeNormaleBinaire b') as [ | | nb' | nb'].
+    + reflexivity.
+    + reflexivity.
+    + simpl in IHb'. simpl. rewrite IHb'. reflexivity.
+    + simpl in IHb'. simpl. rewrite IHb'. reflexivity. 
+Qed.
 
 
 Lemma successeurBin_commute :
@@ -226,20 +237,26 @@ Lemma successeurBin_commute :
   forall b, successeurBin (formeNormaleBinaire b) = formeNormaleBinaire (successeurBin b).
 
 Proof.
-intros.
-induction b.
-1,2,3:reflexivity.
-- simpl. rewrite morphismeSuccesseur_morphismeBinaireNat. reflexivity.
+  intros.
+  induction b as [ | | b' | b'].
+  1,2:reflexivity.
+  - simpl. case (formeNormaleBinaire b') as [ | | nb' | nb'].
+    + reflexivity.
+    + reflexivity.
+    + reflexivity.
+    + reflexivity.
+  - simpl. rewrite <- IHb'. case (formeNormaleBinaire b') as [ | | nb' | nb']. 1-4:reflexivity.
 Qed.
+
 Lemma doubleBin :
 
   forall n, morphismeNatBinaire (doubleNat n) = formeNormaleBinaire (zero (morphismeNatBinaire n)).
 
 Proof.
-intros.
-induction n.
-- reflexivity.
-- simpl. rewrite IHn. simpl. rewrite morphismeSuccesseur_morphismeBinaireNat. reflexivity.
+  intros.
+  induction n.
+  - reflexivity.
+  - simpl. rewrite IHn. simpl.
 Qed.
 
 Lemma successeurDoubleBin :
