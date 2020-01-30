@@ -101,7 +101,7 @@ Defined.
 Print morphismeNatBinaire.
 (** De [Binaire] vers [nat] *)
 
-Definition zeroFinalNat : nat := 0.
+Definition zeroFinalNat : nat := 0. 
 
 Definition unFinalNat : nat := 1.
 
@@ -256,7 +256,10 @@ Proof.
   intros.
   induction n.
   - reflexivity.
-  - simpl. rewrite IHn. simpl.
+  - simpl. rewrite IHn. 
+    rewrite successeurBin_commute. 
+    rewrite successeurBin_commute. 
+    reflexivity. 
 Qed.
 
 Lemma successeurDoubleBin :
@@ -264,10 +267,14 @@ Lemma successeurDoubleBin :
   forall n, morphismeNatBinaire (successeurDoubleNat n) = formeNormaleBinaire (un (morphismeNatBinaire n)).
 
 Proof.
-intros.
-induction n.
-- reflexivity.
-- simpl. rewrite morphismeSuccesseur_morphismeBinaireNat. simpl.  rewrite inverseGaucheMorphismeNatBinaire_morphismeBinaireNat. reflexivity.
+  intros.
+  induction n.
+  - reflexivity.
+  - simpl. rewrite doubleBin.
+    rewrite successeurBin_commute.
+    rewrite successeurBin_commute.
+    rewrite successeurBin_commute.
+    reflexivity. 
 Qed.
 
 Theorem morphismeBinaireNat_morphismeNatBinaire :
@@ -275,7 +282,16 @@ Theorem morphismeBinaireNat_morphismeNatBinaire :
   forall b, morphismeNatBinaire (morphismeBinaireNat b) = formeNormaleBinaire b.
 
 Proof.
-intros.
-induction b.
-1-4:reflexivity.
+  intros.
+  induction b.
+  1,2:reflexivity.
+  - simpl. rewrite doubleBin.
+    rewrite IHb. simpl. 
+    rewrite formeNormale_idempotence. 
+    reflexivity.
+  - simpl. rewrite doubleBin.
+    rewrite IHb.
+    rewrite successeurBin_commute. simpl.
+    rewrite formeNormale_idempotence.
+    reflexivity.
 Qed.
