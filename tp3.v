@@ -38,7 +38,7 @@
 (* Arguments implicites.
  * Il est possible de déclarer des paramètres entre accolades au lieu de parenthèses.
  * Ces paramètres donnent des arguments implicites : Coq les devine par lui-même.
- * Si on veut utiliser tous lae arguments d'une fonction f, écrire l'appel ainsi :
+ * Si on veut utiliser tous les arguments d'une fonction f, écrire l'appel ainsi :
  * - (@f args).
  *)
 
@@ -247,9 +247,11 @@ Definition unFinalNat : natBinaire T1 := 0. (* Rappel : décalage
  * la fonction S (successeur).
  *)
 Definition doubleNat : natBinaire T1 -> natBinaire T1. (* +1 -> * 2 -> -1 *) 
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  induction 1 as [ | n' IH].
+  - exact 0.
+  - exact (S (S IH)).
+Defined.
 
 (* Fonction qui à n associe (n + 1) * 2. 
  *   (à cause du décalage)
@@ -257,9 +259,9 @@ Admitted.
  * la fonction S (successeur).
  *)
 Definition successeurDoubleNat(n : natBinaire T1) : natBinaire T1. (* -> +1 -> *2  *)
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  exact (S (doubleNat n)).
+Defined.
 
 Definition formeNormaleNat(n : natBinaire T1) : natBinaire N := S n.  (* Rappel : décalage *)
 
@@ -493,7 +495,9 @@ Lemma isomorphisme_binairePIP :
   admit.
 Admitted.
 
-(* La projection réalise le calcul de la fome normale, sans zéro inutile à droite. *)
+(* La projection réalise le calcul de la fome normale, sans zéro inutile à droite.
+ * Noter la conversion en BinaireP. Sans celle-ci, l'inversion échoue. 
+ *)
 Definition projection : SuiteBinaire -> Binaire N.
   fix REC 1.
   intro b.
@@ -527,7 +531,19 @@ Defined.
 
 Print normalisation.
 
-(* Le lemme suivant établit la propriété fondamentale d'un ensemble quotient. *)
+(* Les deux propositions suivantes établissent la propriété fondamentale d'un ensemble quotient. 
+ * Le premier lemme utilise la version paramétrée pour permettre une inversion sans perte 
+ * d'informations. 
+ *)
+Lemma quotient_BinaireP :
+  forall e, forall b : BinaireP e,
+    projection (representant (binaireI b)) = normalisation (binaireI b).
+Proof.
+  (* TODO *)
+  admit.
+Admitted.
+
+
 Proposition quotient_Binaire :
   forall s, forall b : Binaire s,
     projection (representant b) = normalisation b.
