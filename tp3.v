@@ -248,9 +248,10 @@ Definition unFinalNat : natBinaire T1 := 0. (* Rappel : décalage
  *)
 Definition doubleNat : natBinaire T1 -> natBinaire T1. (* +1 -> * 2 -> -1 *) 
 Proof.
-  induction 1 as [ | n' IH].
-  - exact 0.
-  - exact (S (S IH)).
+  intro n.
+  induction n.
+  - exact 1.
+  - exact (S (S IHn)).
 Defined.
 
 (* Fonction qui à n associe (n + 1) * 2. 
@@ -271,18 +272,25 @@ Definition formeNormaleNat(n : natBinaire T1) : natBinaire N := S n.  (* Rappel 
  * Prise en compte du décalge.
  *) 
 Definition zeroBinaire(s : SorteBinaire) : Binaire s.
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  case s.
+  - exact unFinal.
+  - exact zeroFinal.
+Defined.
 
 (* interprétation de successeur dans (Binaire N) et (Binaire T1).
  * prise en compte du décalge.
  *) 
 Fixpoint successeurBinaire {e : SorteBinaire}(b : Binaire e) : Binaire e.
-  (* TODO *)
+Proof.
   Show Match Binaire.
-  admit.
-Admitted.
+  case b as [ | | b' | b' | b'].
+  - exact (formeNormale unFinal).
+  - exact (double unFinal).
+  - exact (successeurDouble b').
+  - exact (double (successeurBinaire T1 b')).
+  - exact (formeNormale (successeurBinaire T1 b')).
+Defined.
 
 (** Conversion de [natBinaire] vers [Binaire] *)
 Fixpoint valeurNatEnBinaire(s : SorteBinaire)(n : natBinaire s) : Binaire s.
