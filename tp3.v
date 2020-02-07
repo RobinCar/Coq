@@ -246,12 +246,11 @@ Definition unFinalNat : natBinaire T1 := 0. (* Rappel : décalage
  * Pour simplifier les calculs, il est préférable d'utiliser seulement 
  * la fonction S (successeur).
  *)
-Definition doubleNat : natBinaire T1 -> natBinaire T1. (* +1 -> * 2 -> -1 *) 
-Proof.
+Definition doubleNat : natBinaire T1 -> natBinaire T1. (* +1 -> * 2 -> -1 *)
   intro n.
-  induction n.
+  induction n as [ | n'].
   - exact 1.
-  - exact (S (S IHn)).
+  - exact (S (S IHn')).
 Defined.
 
 (* Fonction qui à n associe (n + 1) * 2. 
@@ -260,7 +259,6 @@ Defined.
  * la fonction S (successeur).
  *)
 Definition successeurDoubleNat(n : natBinaire T1) : natBinaire T1. (* -> +1 -> *2  *)
-Proof.
   exact (S (doubleNat n)).
 Defined.
 
@@ -272,7 +270,6 @@ Definition formeNormaleNat(n : natBinaire T1) : natBinaire N := S n.  (* Rappel 
  * Prise en compte du décalge.
  *) 
 Definition zeroBinaire(s : SorteBinaire) : Binaire s.
-Proof.
   case s.
   - exact unFinal.
   - exact zeroFinal.
@@ -282,21 +279,28 @@ Defined.
  * prise en compte du décalge.
  *) 
 Fixpoint successeurBinaire {e : SorteBinaire}(b : Binaire e) : Binaire e.
-Proof.
-  Show Match Binaire.
-  case b as [ | | b' | b' | b'].
-  - exact (formeNormale unFinal).
+  case b as [ | | sb | sb | bn ].
+  - exact (formeNormale (unFinal)).
   - exact (double unFinal).
-  - exact (successeurDouble b').
-  - exact (double (successeurBinaire T1 b')).
-  - exact (formeNormale (successeurBinaire T1 b')).
+  - exact (successeurDouble sb).
+  - exact (double (successeurBinaire T1 sb)).
+  - exact (formeNormale (successeurBinaire T1 bn)).
 Defined.
+(* Ou avec les notations :
+  case b as [ | | sb | sb | bn].
+  - exact (B I).
+  - exact (O,I).
+  - exact (I, sb).
+  - exact (O, (successeurBin _ sb)).
+  - exact (B (successeurBin _ bn)).
+ *)
 
 (** Conversion de [natBinaire] vers [Binaire] *)
 Fixpoint valeurNatEnBinaire(s : SorteBinaire)(n : natBinaire s) : Binaire s.
-  (* TODO *)
-  admit.
-Admitted.
+  case n as [ | n'].
+  - exact (zeroBinaire s).
+  - exact (successeurBinaire (valeurNatEnBinaire _ n')).
+Defined.
 
 (* La conversion est un morphisme d'algèbre sur Nat.
  * Par définition - simple vérification.
@@ -308,53 +312,66 @@ Lemma morphismeNat_valeurNatEnBinaire :
   forall n,
     valeurNatEnBinaire s (S n) = successeurBinaire (valeurNatEnBinaire s n). 
 Proof.
-  (* TODO *)
-  admit.
-Admitted.
+  split; reflexivity.
+Qed.
 
 (* La conversion valeurNatEnBinaire est aussi un morphisme d'algèbre sur Bin. 
  * Cinq lemmes, un par opération de la signature.
  *)
 Lemma morphismeZeroFinal_valeurNatEnBinaire :
   valeurNatEnBinaire _ zeroFinalNat  = zeroFinal.
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  reflexivity.
+Qed.
 
 Lemma morphismeUnFinal_valeurNatEnBinaire :
   valeurNatEnBinaire _ unFinalNat  = unFinal.
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  reflexivity.
+Qed.
 
 Lemma morphismeDouble_valeurNatEnBinaire :
   forall n : natBinaire T1,
     valeurNatEnBinaire _ (doubleNat n)  = double (valeurNatEnBinaire _ n).
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  induction n.
+  - simpl. reflexivity.
+  - simpl. rewrite IHn. simpl. reflexivity.
+Qed.
 
 Lemma morphismeSuccesseurDouble_valeurNatEnBinaire :
   forall n : natBinaire T1,
     valeurNatEnBinaire _ (successeurDoubleNat n)  = successeurDouble (valeurNatEnBinaire _ n).
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  intro n. simpl. rewrite morphismeDouble_valeurNatEnBinaire.
+  reflexivity.
+Qed.
 
 Lemma morphismeFormeNormale_valeurNatEnBinaire :
   forall n : natBinaire T1,
     valeurNatEnBinaire _ (formeNormaleNat n)  = formeNormale (valeurNatEnBinaire _ n).
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  induction n.
+  - simpl. reflexivity.
+  - simpl. simpl in IHn. rewrite IHn.
+    simpl. reflexivity.
+Qed.
 
 (** Conversion de [Binaire] vers [natBinaire] 
  *)
 
 Fixpoint valeurBinaireEnNat{s : SorteBinaire}(b : Binaire s) : natBinaire s.
-  (* TODO *)
-  admit.
-Admitted.
+  case b as [ | | b' | b' | b'].
+  - exact zeroFinalNat.
+  - exact unFinalNat.
+  - exact (doubleNat (valeurBinaireEnNat _ b')).
+  - exact (successeurDoubleNat (valeurBinaireEnNat _ b')).
+  - exact (formeNormaleNat (valeurBinaireEnNat _ b')).
+Defined.
+
+Compute valeurBinaireEnNat (B O,I,O,I).
+(* Le paramètre s entre accolades est implicite.
+   Il est déterminé automatiquement à partir du type de b. *)
 
 (* La conversion est un morphisme d'algèbre sur Bin.
  * Par définition - simple vérification 
@@ -364,17 +381,17 @@ Lemma morphismeBin_valeurBinaireEnNat :
   /\
   valeurBinaireEnNat unFinal  = unFinalNat
   /\
-  forall b : Binaire T1,
-    valeurBinaireEnNat (double b) = doubleNat (valeurBinaireEnNat b)
+  (forall b : Binaire T1,
+    valeurBinaireEnNat (double b) = doubleNat (valeurBinaireEnNat b))
   /\
-  forall b : Binaire T1,
-    valeurBinaireEnNat (successeurDouble b) = successeurDoubleNat (valeurBinaireEnNat b)
+  (forall b : Binaire T1,
+    valeurBinaireEnNat (successeurDouble b) = successeurDoubleNat (valeurBinaireEnNat b))
   /\
   forall b : Binaire T1,
     valeurBinaireEnNat (formeNormale b) = formeNormaleNat (valeurBinaireEnNat b).
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  repeat split; reflexivity.
+Qed.
 
 (* Chaque composante de la conversion est aussi un morphisme d'algèbre sur Nat. 
  * Deux lemmes, un par opération.
@@ -382,16 +399,21 @@ Admitted.
 Lemma morphismeZero_valeurBinaireEnNat :
   forall s, 
       valeurBinaireEnNat (zeroBinaire s)  = 0.
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  intro s. case s; reflexivity.
+Qed.
 
 Lemma morphismeSuccesseur_valeurBinaireEnNat :
   forall s, forall b : Binaire s,
       valeurBinaireEnNat (successeurBinaire b)  = S (valeurBinaireEnNat b).
-  (* TODO *)
-  admit.
-Admitted.
+Proof.
+  induction b as [ | | b' | b' | b'].
+  - reflexivity.
+  - reflexivity.
+  - simpl. reflexivity.
+  - simpl. rewrite IHb'. reflexivity.
+  - simpl. rewrite IHb'. reflexivity.
+Qed.
 
 (* Les isomorphismes *)
 
@@ -403,9 +425,10 @@ Admitted.
 Proposition isomorphisme_natBinNat :
   forall s, forall n : natBinaire s, valeurBinaireEnNat (valeurNatEnBinaire s n) = n.
 Proof.
-  (* TODO *)
-  admit.
-Admitted.
+  induction n.
+  - simpl. rewrite morphismeZero_valeurBinaireEnNat. reflexivity.
+  - simpl. rewrite morphismeSuccesseur_valeurBinaireEnNat. rewrite IHn. reflexivity.
+Qed.
 
 (** valeurNatEnBinaire o valeurBinaireEnNat : Binaire  -> Binaire  
  * est un morphisme d'algèbre sur B.
@@ -415,9 +438,13 @@ Admitted.
 Proposition isomorphisme_binNatBin :
   forall e, forall b : Binaire e,  (valeurNatEnBinaire e (valeurBinaireEnNat b)) = b.
 Proof.
-  (* TODO *)
-  admit.
-Admitted.
+  induction b as [ | | b' | b' | b'].
+  - simpl. reflexivity.
+  - simpl. reflexivity.
+  - simpl. rewrite morphismeDouble_valeurNatEnBinaire. rewrite IHb'. reflexivity.
+  - simpl. rewrite morphismeDouble_valeurNatEnBinaire. rewrite IHb'. simpl. reflexivity.
+  - simpl valeurBinaireEnNat. rewrite morphismeFormeNormale_valeurNatEnBinaire. rewrite IHb'. reflexivity.
+Qed. 
 
 (* tests *)
 
